@@ -1,9 +1,15 @@
 const player = document.getElementById("player");
 const gameArea = document.getElementById("gameArea");
 const scoreText = document.getElementById("score");
+const highScoreText = document.getElementById("highScore");
 
 let playerX = 275;
 let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+
+// Display high score on load
+highScoreText.textContent = highScore;
+
 
 const bullets = [];
 const enemies = [];
@@ -153,7 +159,15 @@ gameLoopInterval = setInterval(()=>{
             
             clearInterval(gameLoopInterval);
             clearInterval(spawnInterval);
-            alert("GAME OVER");
+            
+            // Update high score if current score is higher
+            if(score > highScore){
+                highScore = score;
+                localStorage.setItem("highScore", highScore);
+                alert(`GAME OVER!\n\nScore: ${score}\nNew High Score!`);
+            } else {
+                alert(`GAME OVER!\n\nScore: ${score}\nHigh Score: ${highScore}`);
+            }
             location.reload();
         }
 
