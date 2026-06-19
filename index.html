@@ -9,11 +9,42 @@
 <h2>Score: <span id="score">0</span></h2>
 <h2 class="high-score">High Score: <span id="highScore">0</span></h2>
 
-<div id="gameArea">
+<div id="gameArea" style="display:none;">
     <div id="player"></div>
 </div>
 
-<script src="script.js"></script>
+<!-- SPLASH SCREEN -->
+<div id="splash">
+    <h1>SPACE SHOOTER</h1>
+    <p>Created by <span id="name">Avisek Dulal</span></p>
+    <button onclick="startGame()">Start Game</button>
+</div>
 
+<!-- COPYRIGHT BUTTON -->
+<button id="copyrightBtn">©</button>
+
+<!-- COPYRIGHT MODAL -->
+<div id="copyrightModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCopyright()">&times;</span>
+
+        <h2>SPACE SHOOTER</h2>
+
+        <p>
+            By using the Space Shooter Game, players acknowledge it is for entertainment purposes only.
+            <span id="name">Seiever Inc.</span>
+            is not responsible for any damages or losses.
+        </p>
+
+        <p>All gameplay is at user’s own risk.</p>
+
+        <h4>Designed & Powered By: <span id="name">Seiver Inc.</span></h4>
+        <h4>Developed By: Avisek Dulal</h4>
+
+        <p>© 2026 All Rights Reserved</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

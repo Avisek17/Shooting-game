@@ -3,56 +3,132 @@ const gameArea = document.getElementById("gameArea");
 const scoreText = document.getElementById("score");
 const highScoreText = document.getElementById("highScore");
 
+// ---------------- GAME STATE ----------------
 let playerX = 275;
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 
-// Display high score on load
-highScoreText.textContent = highScore;
-
-
-const bullets = [];
-const enemies = [];
+let bullets = [];
+let enemies = [];
 
 let spawnInterval;
 let gameLoopInterval;
 
+highScoreText.textContent = highScore;
 
-// PLAYER MOVEMENT
+// ---------------- START GAME ----------------
+function startGame() {
+    const splash = document.getElementById("splash");
 
+    splash.style.opacity = "0";
+    splash.style.transition = "0.5s ease";
+
+    setTimeout(() => {
+        splash.style.display = "none";
+        gameArea.style.display = "block";
+
+        startGameLoop();
+    }, 500);
+}
+
+// ---------------- GAME LOOP ----------------
+function startGameLoop() {
+
+    score = 0;
+    scoreText.textContent = score;
+
+    bullets = [];
+    enemies = [];
+
+    spawnInterval = setInterval(spawnEnemy, 1000);
+
+    gameLoopInterval = setInterval(() => {
+
+        // BULLETS MOVE
+        for (let i = bullets.length - 1; i >= 0; i--) {
+
+            bullets[i].y -= 10;
+            bullets[i].element.style.top = bullets[i].y + "px";
+
+            if (bullets[i].y < 0) {
+                bullets[i].element.remove();
+                bullets.splice(i, 1);
+            }
+        }
+
+        // ENEMIES MOVE
+        for (let i = enemies.length - 1; i >= 0; i--) {
+
+            enemies[i].y += 3;
+            enemies[i].element.style.top = enemies[i].y + "px";
+
+            const playerBox = {
+                x: player.offsetLeft,
+                y: player.offsetTop,
+                width: player.offsetWidth,
+                height: player.offsetHeight
+            };
+
+            const enemyBox = {
+                x: enemies[i].x,
+                y: enemies[i].y,
+                width: 40,
+                height: 40
+            };
+
+            if (hit(playerBox, enemyBox)) {
+                endGame();
+            }
+
+            // BULLET COLLISION
+            for (let j = bullets.length - 1; j >= 0; j--) {
+
+                const bulletBox = {
+                    x: bullets[j].element.offsetLeft,
+                    y: bullets[j].y,
+                    width: 6,
+                    height: 18
+                };
+
+                if (hit(bulletBox, enemyBox)) {
+
+                    bullets[j].element.remove();
+                    bullets.splice(j, 1);
+
+                    enemies[i].element.remove();
+                    enemies.splice(i, 1);
+
+                    score += 10;
+                    scoreText.textContent = score;
+
+                    break;
+                }
+            }
+        }
+
+    }, 20);
+}
+
+// ---------------- PLAYER CONTROL ----------------
 document.addEventListener("keydown", e => {
-
-    if(e.key === "ArrowLeft")
-        playerX -= 20;
-
-    if(e.key === "ArrowRight")
-        playerX += 20;
-
-    if(e.code === "Space")
-        shoot();
 
     const maxX = gameArea.clientWidth - player.offsetWidth;
 
+    if (e.key === "ArrowLeft") playerX -= 20;
+    if (e.key === "ArrowRight") playerX += 20;
+    if (e.code === "Space") shoot();
+
     playerX = Math.max(0, Math.min(maxX, playerX));
-
-    player.style.left = `${playerX}px`;
-
+    player.style.left = playerX + "px";
 });
 
-
-// SHOOT BULLET
-
-function shoot(){
-
+// ---------------- SHOOT ----------------
+function shoot() {
     const bullet = document.createElement("div");
-
     bullet.className = "bullet";
 
-    bullet.style.left =
-        `${playerX + player.offsetWidth/2}px`;
-
-    bullet.style.top =
-        `${player.offsetTop}px`;
+    bullet.style.left = (playerX + 18) + "px";
+    bullet.style.top = player.offsetTop + "px";
 
     gameArea.appendChild(bullet);
 
@@ -60,23 +136,16 @@ function shoot(){
         element: bullet,
         y: player.offsetTop
     });
-
 }
 
-
-// SPAWN ENEMY
-
-function spawnEnemy(){
-
+// ---------------- ENEMY ----------------
+function spawnEnemy() {
     const enemy = document.createElement("div");
-
     enemy.className = "enemy";
 
-    const x =
-        Math.random() *
-        (gameArea.clientWidth - 40);
+    const x = Math.random() * (gameArea.clientWidth - 40);
 
-    enemy.style.left = `${x}px`;
+    enemy.style.left = x + "px";
     enemy.style.top = "-40px";
 
     gameArea.appendChild(enemy);
@@ -86,117 +155,71 @@ function spawnEnemy(){
         x: x,
         y: -40
     });
-
 }
 
-
-// COLLISION CHECK
-
-function hit(a,b){
-
+// ---------------- COLLISION ----------------
+function hit(a, b) {
     return (
         a.x < b.x + b.width &&
         a.x + a.width > b.x &&
         a.y < b.y + b.height &&
         a.y + a.height > b.y
     );
-
 }
 
+// ---------------- GAME OVER ----------------
+function endGame() {
 
-// CREATE ENEMIES
+    clearInterval(spawnInterval);
+    clearInterval(gameLoopInterval);
 
-spawnInterval = setInterval(spawnEnemy, 1000);
-
-
-// GAME LOOP
-
-gameLoopInterval = setInterval(()=>{
-
-    // MOVE BULLETS
-
-    for(let i = bullets.length-1; i >=0; i--){
-
-        bullets[i].y -= 10;
-
-        bullets[i].element.style.top =
-            `${bullets[i].y}px`;
-
-        if(bullets[i].y < 0){
-
-            bullets[i].element.remove();
-            bullets.splice(i,1);
-        }
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+        alert("New High Score: " + score);
+    } else {
+        alert("Game Over! Score: " + score);
     }
 
+    location.reload();
+}
 
-    // MOVE ENEMIES
+// ---------------- TOUCH CONTROL (MOBILE) ----------------
+let touchX = 0;
 
-    for(let i = enemies.length-1; i >=0; i--){
+gameArea.addEventListener("touchstart", e => {
+    touchX = e.touches[0].clientX;
+});
 
-        enemies[i].y += 3;
+gameArea.addEventListener("touchmove", e => {
 
-        enemies[i].element.style.top =
-            `${enemies[i].y}px`;
+    let newX = e.touches[0].clientX;
+    let diff = newX - touchX;
 
-        // PLAYER COLLISION
+    playerX += diff * 0.2;
 
-        const playerBox = {
-            x: player.offsetLeft,
-            y: player.offsetTop,
-            width: player.offsetWidth,
-            height: player.offsetHeight
-        };
+    const maxX = gameArea.clientWidth - player.offsetWidth;
+    playerX = Math.max(0, Math.min(maxX, playerX));
 
-        const enemyBox = {
-            x: enemies[i].x,
-            y: enemies[i].y,
-            width: 40,
-            height: 40
-        };
+    player.style.left = playerX + "px";
 
-        if(hit(enemyBox,playerBox)){
-            
-            clearInterval(gameLoopInterval);
-            clearInterval(spawnInterval);
-            
-            // Update high score if current score is higher
-            if(score > highScore){
-                highScore = score;
-                localStorage.setItem("highScore", highScore);
-                alert(`GAME OVER!\n\nScore: ${score}\nNew High Score!`);
-            } else {
-                alert(`GAME OVER!\n\nScore: ${score}\nHigh Score: ${highScore}`);
-            }
-            location.reload();
-        }
+    touchX = newX;
+});
 
+// ---------------- COPYRIGHT MODAL ----------------
+const copyrightBtn = document.getElementById("copyrightBtn");
+const copyrightModal = document.getElementById("copyrightModal");
 
-        // BULLET COLLISION
+copyrightBtn.onclick = () => {
+    copyrightModal.style.display = "flex";
+};
 
-        for(let j = bullets.length-1; j >=0; j--){
+function closeCopyright() {
+    copyrightModal.style.display = "none";
+}
 
-            const bulletBox = {
-                x: bullets[j].element.offsetLeft,
-                y: bullets[j].y,
-                width: 6,
-                height: 18
-            };
-
-            if(hit(bulletBox,enemyBox)){
-
-                bullets[j].element.remove();
-                bullets.splice(j,1);
-
-                enemies[i].element.remove();
-                enemies.splice(i,1);
-
-                score += 10;
-                scoreText.textContent = score;
-
-                break;
-            }
-        }
+window.onclick = e => {
+    if (e.target === copyrightModal) {
+        copyrightModal.style.display = "none";
     }
-
-},20);
+};
