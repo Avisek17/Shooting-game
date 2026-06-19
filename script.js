@@ -3,7 +3,6 @@ const gameArea = document.getElementById("gameArea");
 const scoreText = document.getElementById("score");
 const highScoreText = document.getElementById("highScore");
 
-// ---------------- GAME STATE ----------------
 let playerX = 275;
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
@@ -16,7 +15,7 @@ let gameLoopInterval;
 
 highScoreText.textContent = highScore;
 
-// ---------------- START GAME ----------------
+
 function startGame() {
     const splash = document.getElementById("splash");
 
@@ -31,7 +30,7 @@ function startGame() {
     }, 500);
 }
 
-// ---------------- GAME LOOP ----------------
+
 function startGameLoop() {
 
     score = 0;
@@ -44,7 +43,7 @@ function startGameLoop() {
 
     gameLoopInterval = setInterval(() => {
 
-        // BULLETS MOVE
+        
         for (let i = bullets.length - 1; i >= 0; i--) {
 
             bullets[i].y -= 10;
@@ -56,7 +55,7 @@ function startGameLoop() {
             }
         }
 
-        // ENEMIES MOVE
+        
         for (let i = enemies.length - 1; i >= 0; i--) {
 
             enemies[i].y += 3;
@@ -80,7 +79,7 @@ function startGameLoop() {
                 endGame();
             }
 
-            // BULLET COLLISION
+            
             for (let j = bullets.length - 1; j >= 0; j--) {
 
                 const bulletBox = {
@@ -109,7 +108,7 @@ function startGameLoop() {
     }, 20);
 }
 
-// ---------------- PLAYER CONTROL ----------------
+
 document.addEventListener("keydown", e => {
 
     const maxX = gameArea.clientWidth - player.offsetWidth;
@@ -122,7 +121,7 @@ document.addEventListener("keydown", e => {
     player.style.left = playerX + "px";
 });
 
-// ---------------- SHOOT ----------------
+
 function shoot() {
     const bullet = document.createElement("div");
     bullet.className = "bullet";
@@ -138,7 +137,7 @@ function shoot() {
     });
 }
 
-// ---------------- ENEMY ----------------
+
 function spawnEnemy() {
     const enemy = document.createElement("div");
     enemy.className = "enemy";
@@ -157,7 +156,7 @@ function spawnEnemy() {
     });
 }
 
-// ---------------- COLLISION ----------------
+
 function hit(a, b) {
     return (
         a.x < b.x + b.width &&
@@ -167,7 +166,7 @@ function hit(a, b) {
     );
 }
 
-// ---------------- GAME OVER ----------------
+
 function endGame() {
 
     clearInterval(spawnInterval);
@@ -184,7 +183,7 @@ function endGame() {
     location.reload();
 }
 
-// ---------------- TOUCH CONTROL (MOBILE) ----------------
+//TOUCH CONTROL (MOBILE)
 let touchX = 0;
 
 gameArea.addEventListener("touchstart", e => {
@@ -206,7 +205,7 @@ gameArea.addEventListener("touchmove", e => {
     touchX = newX;
 });
 
-// ---------------- COPYRIGHT MODAL ----------------
+//COPYRIGHT MODAL
 const copyrightBtn = document.getElementById("copyrightBtn");
 const copyrightModal = document.getElementById("copyrightModal");
 
