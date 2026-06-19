@@ -71,8 +71,8 @@ function startGameLoop() {
             const enemyBox = {
                 x: enemies[i].x,
                 y: enemies[i].y,
-                width: 40,
-                height: 40
+                width: 60,
+                height: 50
             };
 
             if (hit(playerBox, enemyBox)) {
@@ -142,7 +142,7 @@ function spawnEnemy() {
     const enemy = document.createElement("div");
     enemy.className = "enemy";
 
-    const x = Math.random() * (gameArea.clientWidth - 40);
+    const x = Math.random() * (gameArea.clientWidth - 60);
 
     enemy.style.left = x + "px";
     enemy.style.top = "-40px";

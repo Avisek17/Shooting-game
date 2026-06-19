@@ -33,9 +33,10 @@ h2 {
 
 /* PLAYER */
 #player {
-    width: 40px;
-    height: 40px;
-    background: cyan;
+    width: 60px;
+    height: 50px;
+    background: url('rocket.png');
+    background-size: contain;
     position: absolute;
     bottom: 10px;
     left: 275px;
@@ -55,7 +56,8 @@ h2 {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: red;
+    background: url('enemy.png');
+    background-size: contain;
     position: absolute;
 }
 
